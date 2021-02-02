@@ -10,7 +10,6 @@ from DATA_MANAGER.data_manager import data_manager
 from CLEANER.cleaner_02 import spike_denoiser
 from SORTER.sorter_umap import sorter_umap as sorter
 from PyQt5.QtWidgets import QApplication
-
 import seaborn as sns
 sns.set(style="darkgrid")
 sns.set_context("notebook", rc={"lines.linewidth": 2.5})

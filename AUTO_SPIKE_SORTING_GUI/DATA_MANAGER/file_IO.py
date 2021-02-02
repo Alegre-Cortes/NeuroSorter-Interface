@@ -9,7 +9,9 @@ from PY_blackrock.brpylib import NevFile, brpylib_ver
 from scipy.signal import resample
 import h5py
 import numpy as np
-
+from scipy.signal import butter, lfilter
+from DATA_MANAGER import nexfile
+from numpy.lib.stride_tricks import as_strided
 from decorators.time_consuming import timeit 
 
 class nev_manager:   
@@ -26,9 +28,13 @@ class nev_manager:
                 self.__python_dict(file)
 #            elif file[-4:] == '.mat':
 #                self.__mat_dict(file, self.ExperimentID)
-            elif file[-4:] == '.nev':
+            if file[-4:] == '.nev':
                 self.__nev_dict(file, self.ExperimentID)
             self.ExperimentID += 1 
+            
+            if file[-4:] == '.nex':
+                self.__nex_dict(file, self.ExperimentID)
+            self.ExperimentID += 1             
             
         return None
     
@@ -109,6 +115,45 @@ class nev_manager:
         [append_OldID(OldID) for OldID in dictionary['OldID']]
         [append_ExperimentID(ExperimentID) for ExperimentID in dictionary['ExperimentID']]
 
+
+    def _nex_dict(self, file, ExperimentID):
+       
+        reader = nexfile.Reader(useNumpy=True)
+        fileData = reader.ReadNexFile(file)
+       
+        append_channelID = self.spike_dict['ChannelID'].append
+        append_TimeStamps = self.spike_dict['TimeStamps'].append
+        append_Waveforms = self.spike_dict['Waveforms'].append
+        append_UnitID = self.spike_dict['UnitID'].append
+        append_OldID= self.spike_dict['OldID'].append
+        append_ExperimentID = self.spike_dict['ExperimentID'].append
+           
+        for i in range(fileData['FileHeader']['NumVars']):
+            if 'ContinuousValues' in fileData['Variables'][i].keys():
+                temp = fileData["Variables"][i]["ContinuousValues"]
+                temp = butter_bandpass_filter(temp, 500, 3000, 20000, order=2)
+                threshold = -2*np.std(temp)
+                temp = temp * 1000 #para tener los spikes en microvoltios porque vienen en milivoltios
+                for j in range(50,len(temp)-50):
+                    if (temp[j] > threshold and temp[j+1] < threshold):
+                        append_ExperimentID( ExperimentID )
+                        append_channelID( i )
+                        append_UnitID( 1 )
+                        append_OldID( None )          
+                        append_TimeStamps(j)
+                        append_Waveforms( resample(temp[j-20:j+40],48) )    
+
+    def butter_bandpass(lowcut, highcut, fs, order=2):
+        nyq = 0.5 * fs
+        low = lowcut / nyq
+        high = highcut / nyq
+        b, a = butter(order, [low, high], btype='band')
+        return b, a
+
+    def butter_bandpass_filter(data, lowcut, highcut, fs, order=2):
+        b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+        y = lfilter(b, a, data)
+        return y
                 
         
 

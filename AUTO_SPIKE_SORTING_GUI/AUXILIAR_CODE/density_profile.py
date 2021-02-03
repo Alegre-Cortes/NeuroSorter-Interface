@@ -25,7 +25,6 @@ def run(spike_dict, current):
     units = np.empty((1,len(index)))
     for j in range(0,len(index)):
         time_stamps[0,j] = (spike_dict["TimeStamps"][index[j]])/20 #TimeStamp of each spike is obtained 
-        wave_forms[:,j] = (spike_dict["Waveforms"][index[j]]) #Waveform of each spike is obtained
         units[0,j] = spike_dict["UnitID"][index[j]]
         
     # Plotting
@@ -37,10 +36,10 @@ def run(spike_dict, current):
     for j in np.unique(units):
         trans = np.where(units==j) 
         #Select the spikes in each unit
-        trans = trans[1]        
+        trans = trans[1]
+        trans  = time_stamps[0,trans]       
         color = colours(int(j))
         distplot(trans, hist=False,  rug=True,
-             axlabel="Something ?",
-             kde_kws=dict(label="kde"),
+             kde_kws=dict(label="kde", color=color),
              rug_kws=dict(height=.2, linewidth=2, color=color))
 

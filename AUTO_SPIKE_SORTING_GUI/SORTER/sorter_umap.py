@@ -14,7 +14,8 @@ class sorter_umap:
     def __init__(self):
         pass
         
-    def sort_spikes(self, spikes, n_neighbors=20, min_dist=.3, n_components=2, metric='manhattan'):       
+    # def sort_spikes(self, spikes, n_neighbors=20, min_dist=.3, n_components=2, metric='manhattan'):       
+    def sort_spikes(self, spikes, n_neighbors=round(spikes.shape[0]/50), min_dist=.0, n_components=2):       
         if spikes.shape[0] <= n_neighbors:
             unit_IDs = np.zeros((spikes.shape[0],), dtype=int) + 1
         else:

@@ -45,7 +45,8 @@ class spike_denoiser:
             unit_IDs = self._filter_spikes(waveforms, np.zeros((waveforms.shape[0],), dtype=int))
         else:
             print('paso por tengo suficientes')
-            reducer = umap.UMAP(densmap=True, n_neighbors=n_neighbors, min_dist=min_dist, n_components=n_components, metric=metric, set_op_mix_ratio=0.2 )
+            reducer = umap.UMAP(n_components=3,n_neighbors= round(len(waveforms)/50), min_dist = 0 )
+
             embedding = reducer.fit_transform(waveforms)
             print(embedding.shape)
             labels = self._compute_BIC(embedding)

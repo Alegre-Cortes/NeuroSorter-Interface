@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-@authors: %(Val-Calvo, Mikel and Alegre-Cortés, Javier)
-@emails: %(mikel1982mail@gmail.com, jalegre@umh.es)
-@institutions: %(Dpto. de Inteligencia Artificial, Universidad Nacional de Educación a Distancia (UNED), Postdoctoral Researcher Instituto de Neurociencias UMH-CSIC)
+Created on Mon Feb  8 09:40:19 2021
+
+@author: Javie
 """
+
 #%%
 import umap
 import numpy as np
@@ -15,12 +16,12 @@ class sorter_umap:
         pass
         
     # def sort_spikes(self, spikes, n_neighbors=20, min_dist=.3, n_components=2, metric='manhattan'):       
-    def sort_spikes(self, spikes,n_neighbors=15, min_dist=.0, n_components=3, metric='euclidean'):       
+    def sort_spikes(self, spikes, n_neighbors=round(spikes.shape[0]/50),n_components=2,init='pca',early_exaggeration=25.0):       
         if spikes.shape[0] <= n_neighbors:
             unit_IDs = np.zeros((spikes.shape[0],), dtype=int) + 1
         else:
             # compute latent features
-            reducer = umap.UMAP( n_neighbors=round(spikes.shape[0]/50), min_dist=min_dist, n_components=n_components, metric=metric )
+            reducer = TSNE( n_components=2,init='pca',early_exaggeration=120.0)
             embedding = reducer.fit_transform(spikes)
             # compute the optimal set of clusters
             unit_IDs = self._compute_BIC(embedding) + 1

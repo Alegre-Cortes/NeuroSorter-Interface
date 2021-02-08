@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-@authors: %(Val-Calvo, Mikel and Alegre-Cortés, Javier)
-@emails: %(mikel1982mail@gmail.com, jalegre@umh.es)
-@institutions: %(Dpto. de Inteligencia Artificial, Universidad Nacional de Educación a Distancia (UNED), Postdoctoral Researcher Instituto de Neurociencias UMH-CSIC)
+Created on Mon Feb  8 10:21:03 2021
+
+@author: Javie
 """
+
 #%%
-import umap
+from sklearn.manifold import Isomap
 import numpy as np
 from sklearn import mixture
 import similaritymeasures as sm
 
-class sorter_umap:
+class sorter_ISOMAP:
     def __init__(self):
         pass
         
-    # def sort_spikes(self, spikes, n_neighbors=20, min_dist=.3, n_components=2, metric='manhattan'):       
-    def sort_spikes(self, spikes,n_neighbors=15, min_dist=.0, n_components=3, metric='euclidean'):       
+    def sort_spikes(self, spikes, n_neighbors=20, min_dist=0, n_components=5, metric='manhattan'):       
+    # def sort_spikes(self, spikes, n_neighbors= round(len(spikes)/50), eigen_solver = 'dense',p=1):       
         if spikes.shape[0] <= n_neighbors:
             unit_IDs = np.zeros((spikes.shape[0],), dtype=int) + 1
         else:
             # compute latent features
-            reducer = umap.UMAP( n_neighbors=round(spikes.shape[0]/50), min_dist=min_dist, n_components=n_components, metric=metric )
+            reducer = Isomap(n_neighbors= round(len(spikes)/50),n_components=5, eigen_solver = 'dense',p=1)
             embedding = reducer.fit_transform(spikes)
             # compute the optimal set of clusters
             unit_IDs = self._compute_BIC(embedding) + 1

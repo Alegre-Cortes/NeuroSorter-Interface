@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-@authors: %(Val-Calvo, Mikel and Alegre-Cortés, Javier)
-@emails: %(mikel1982mail@gmail.com, jalegre@umh.es)
-@institutions: %(Dpto. de Inteligencia Artificial, Universidad Nacional de Educación a Distancia (UNED), Postdoctoral Researcher Instituto de Neurociencias UMH-CSIC)
+Created on Thu Feb  4 09:59:46 2021
+
+@author: jalegre
 """
 #%%
 
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import umap
+from sklearn.manifold import Isomap
 from sklearn import mixture
 from sklearn.neighbors import LocalOutlierFactor
 
@@ -37,7 +37,7 @@ class spike_denoiser:
             
         return True
         
-    def run(self, waveforms, n_neighbors=15, min_dist=.0, n_components=3, metric='euclidean'):
+    def run(self, waveforms,  n_neighbors=15, min_dist=.0, n_components=5, metric='euclidean'):
         print(self.__load_references())
         
         if waveforms.shape[0] <= n_neighbors:
@@ -45,7 +45,8 @@ class spike_denoiser:
             unit_IDs = self._filter_spikes(waveforms, np.zeros((waveforms.shape[0],), dtype=int))
         else:
             print('paso por tengo suficientes')
-            reducer = umap.UMAP( n_neighbors=round(len(spikes)/50), min_dist=min_dist, n_components=n_components, metric=metric, set_op_mix_ratio=0.2 )
+            reducer = Isomap(n_neighbors= round(len(waveforms)/50),n_components=5, eigen_solver = 'dense',p=1)
+
             embedding = reducer.fit_transform(waveforms)
             print(embedding.shape)
             labels = self._compute_BIC(embedding)

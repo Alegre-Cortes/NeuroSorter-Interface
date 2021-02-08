@@ -9,6 +9,10 @@ from GUI.GUI_behaviour import GUI_behaviour
 from DATA_MANAGER.data_manager import data_manager
 from CLEANER.cleaner_02 import spike_denoiser
 from SORTER.sorter_umap import sorter_umap as sorter
+
+# from CLEANER.cleaner_ISOMAP import spike_denoiser
+# from SORTER.sorter_ISOMAP import sorter_ISOMAP as sorter
+
 from PyQt5.QtWidgets import QApplication
 import seaborn as sns
 sns.set(style="darkgrid")
